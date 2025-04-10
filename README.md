@@ -2,6 +2,10 @@
 
 A Python package for various utilities with a focus on modularity and choice.
 
+## History
+
+I brought two of these into my dissertation project, which then became the flagship product of the non-profit I co-founded: the Open Science Framework. These were `modular-odm` and `modular-file renderer`. The latter is still used today; the former, while used heavily at COS, never reached its full potential. That may now change. The goal was to use abstraction to maximize choice and minimize lock-in.
+
 ## Installation
 
 ```bash
