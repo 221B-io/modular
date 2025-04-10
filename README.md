@@ -1,6 +1,6 @@
 # Modular
 
-A Python package for various data processing utilities with a focus on modularity and choice.
+A Python package for various utilities with a focus on modularity and choice.
 
 ## Installation
 
