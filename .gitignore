@@ -172,3 +172,72 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# Cursor
+.cursor/
+.cursor-server/
+
+# Coverage reports
+coverage.lcov
+.coverage.*
+coverage/
+
+# Virtual environment
+.python-version  # pyenv
+.venv/
+.virtualenv/
+
+# Local development
+*.local
+*.local.*
+local/
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.swp
+*.swo
+*~
+*.bak
+*.tmp
+
+# Logs
+logs/
+*.log.*
+
+# Environment variables
+.env*
+.env.local
+.env.*.local
+
+# PyPI/Publishing
+.pypirc
+*.pypirc
+dist/
+build/
+*.egg-info/
+
+# Test databases
+test.db
+test.sqlite
+test.sqlite3
+
+# Documentation
+_build/
+_static/
+_templates/
+docs/_build/
+docs/_static/
+docs/_templates/
+
+# Profiling
+*.prof
+*.lprof
+*.stats

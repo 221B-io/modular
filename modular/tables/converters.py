@@ -20,8 +20,8 @@ def delimited(table: Dict[str, List], delimiter: str = ',') -> str:
     if not table['data']:
         return ""
         
-    output = StringIO()
-    writer = csv.writer(output, delimiter=delimiter)
+    output = StringIO(newline='')  # Set newline='' to control line endings
+    writer = csv.writer(output, delimiter=delimiter, lineterminator='\n')  # Explicitly set line endings
     writer.writerow(table['header'])
     writer.writerows(table['data'])
     return output.getvalue()

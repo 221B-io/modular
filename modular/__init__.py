@@ -1,5 +1,5 @@
 """
-Modular package for various data processing utilities.
+Modular package
 """
 
 __version__ = "0.1.0" 

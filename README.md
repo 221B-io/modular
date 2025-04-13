@@ -48,8 +48,8 @@ The simplest way to create formatted tables is using the `table` function:
 from modular.tables import table, markdown, delimited, rst
 
 data = [
-    {"name": "Alice", "age": 30, "city": "New York"},
-    {"name": "Bob", "age": 25, "city": "Los Angeles"}
+    {"name": "Alice", "age": 30, "salary": 50000.123},
+    {"name": "Bob", "age": 25, "salary": 60000.456}
 ]
 
 # Convert to Markdown
@@ -81,18 +81,29 @@ md_table = table(
 
 #### Value Formatting
 
-Apply format strings to columns:
+Apply format strings to specific columns or set a default format for all numeric values:
 
 ```python
-data = [
-    {"name": "Alice", "age": 30, "salary": 50000.123},
-    {"name": "Bob", "age": 25, "salary": 60000.456}
-]
-
+# Format specific columns
 md_table = table(
     data,
     formatter=markdown,
-    cell_formats=['{:s}', '{:d}', '${:.2f}']
+    cell_formats=['{:s}', '{:d}', '${:.2f}']  # string, integer, currency format
+)
+
+# Set default number format for all numeric values
+md_table = table(
+    data,
+    formatter=markdown,
+    default_number_format='{:.3f}'  # 3 decimal places for all numbers
+)
+
+# Combine both
+md_table = table(
+    data,
+    formatter=markdown,
+    cell_formats=['{:s}', None, '${:.2f}'],  # Use default_number_format where None
+    default_number_format='{:.3f}'
 )
 ```
 
@@ -102,14 +113,14 @@ Specify custom column headers:
 
 ```python
 data = [
-    ['Alice', 30, 'New York'],
-    ['Bob', 25, 'Los Angeles']
+    ['Alice', 30, 50000.123],
+    ['Bob', 25, 60000.456]
 ]
 
 md_table = table(
     data,
     formatter=markdown,
-    header=['Name', 'Age', 'City']
+    header=['Name', 'Age', 'Salary']
 )
 ```
 
@@ -150,9 +161,9 @@ from modular.tables import normalize_table, markdown
 # First normalize the data
 normalized = normalize_table(
     data,
-    header=['Name', 'Age', 'City'],
-    order=['Name', 'City', 'Age'],
-    cell_formats=['{:s}', '{:d}', '{:s}']
+    header=['Name', 'Age', 'Salary'],
+    order=['Name', 'Salary', 'Age'],
+    cell_formats=['{:s}', '{:d}', '{:.2f}']
 )
 
 # Then convert to desired format

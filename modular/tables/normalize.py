@@ -31,16 +31,14 @@ def normalize_table(
     # Handle list of dictionaries
     if isinstance(data[0], dict):
         if header is None:
-            # Use all unique keys from all dictionaries as header
-            header = list({key for d in data for key in d.keys()})
+            # Use keys from first dictionary to establish initial order
+            header = list(data[0].keys())
+            # Add any additional keys from other dictionaries
+            for d in data[1:]:
+                for key in d.keys():
+                    if key not in header:
+                        header.append(key)
         
-        if order:
-            # Reorder header based on order parameter
-            # Add any missing headers at the end
-            header = [h for h in order if h in header] + [
-                h for h in header if h not in order
-            ]
-            
         # Convert dicts to lists based on header order
         table_data = [
             [row.get(col, '') for col in header]
@@ -52,28 +50,39 @@ def normalize_table(
         if header is None:
             # Generate numeric headers
             header = [str(i) for i in range(len(data[0]))]
-            
-        if order:
-            # Create mapping of header to index
-            header_idx = {h: i for i, h in enumerate(header)}
-            # Get new column order based on specified order
-            col_order = [header_idx[h] for h in order if h in header_idx]
-            # Add any missing columns at the end
-            col_order.extend(i for i in range(len(header)) if i not in col_order)
-            
-            # Reorder headers and data
-            header = [header[i] for i in col_order]
-            table_data = [
-                [row[i] for i in col_order]
-                for row in data
-            ]
-        else:
-            table_data = data
+        table_data = list(data)  # Make a copy to avoid modifying input
+
+    # Apply ordering if specified
+    if order:
+        # Create mapping of current positions
+        current_positions = {h: i for i, h in enumerate(header)}
+        
+        # Create new header order
+        new_header = []
+        # First add specified columns in order
+        for h in order:
+            if h in header:
+                new_header.append(h)
+        # Then add any remaining columns
+        new_header.extend(h for h in header if h not in new_header)
+        
+        # Create mapping for reordering data
+        reorder_indices = [current_positions[h] for h in new_header]
+        
+        # Reorder the data
+        table_data = [
+            [row[i] for i in reorder_indices]
+            for row in table_data
+        ]
+        
+        header = new_header
             
     # Apply formatting
-    if cell_formats:
-        # Ensure cell_formats matches number of columns
-        formats = (cell_formats + [default_number_format] * len(header))[:len(header)]
+    if cell_formats or default_number_format != "{:.2f}":  # Apply if cell_formats provided or custom default_number_format
+        # Use cell_formats if provided, otherwise use default_number_format for all columns
+        formats = cell_formats if cell_formats else [default_number_format] * len(header)
+        # Ensure formats matches number of columns
+        formats = (formats + [default_number_format] * len(header))[:len(header)]
         
         formatted_data = []
         for row in table_data:
