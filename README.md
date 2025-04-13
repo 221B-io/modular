@@ -1,6 +1,14 @@
 # Modular
 
-A Python package for various utilities with a focus on modularity and choice.
+The code you will see here will be a set of two sorts: 
+- utilities to abstract core functionality (e.g., document/object storage) in such a way that said functionality can be referred to in a standardized, serializable way, while handling the implementation-specific stuff (e.g., MongoDB, postgres) as purely config that exists far-removed from the code
+- some handy tools crafted in a standardized, serializable way, like the `tables` module below, that will also serve as examples of the approach
+
+Why modular?
+- It helps devs write clean, readable, configurable code.
+- Actions are easily loggable--something taken for granted in highly asynchronous codebases.
+- Because code is inherently configurable, environment management is much simpler.
+- You can help avoid lock-in, either because you want to choose the best performing tool for the job and easily switch as needed or because e.g., pricing, license, priorities, or principles of a tool changes.
 
 ## History
 
@@ -11,7 +19,6 @@ I brought two of these into my dissertation project, which then became the flags
 ```bash
 pip install modular
 ```
-
 ## Features
 
 ### Tables Module
