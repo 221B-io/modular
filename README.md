@@ -1,7 +1,7 @@
 # Modular
 
 The code you will see here will be a set of two sorts: 
-- utilities to abstract core functionality (e.g., document/object storage) in such a way that said functionality can be referred to in a standardized, serializable way, while handling the implementation-specific stuff (e.g., MongoDB, postgres) as purely config that exists far-removed from the code
+- utilities to abstract core functionality (e.g., document/object storage) in such a way that said functionality can be referred to in a standardized, serializable way, while handling the implementation-specific stuff (e.g., MongoDB, postgres)--including versioning--as purely config that exists far-removed from the code
 - some handy tools crafted in a standardized, serializable way, like the `tables` module below, that will also serve as examples of the approach
 
 Why modular?
@@ -9,6 +9,8 @@ Why modular?
 - Actions are easily loggable--something taken for granted in highly asynchronous codebases.
 - Because code is inherently configurable, environment management is much simpler.
 - You can help avoid lock-in, either because you want to choose the best performing tool for the job and easily switch as needed or because e.g., pricing, license, priorities, or principles of a tool changes.
+
+Use this a dependency injection (DI) framework? Yes and no. But yes.
 
 ## History
 
@@ -19,58 +21,142 @@ I brought two of these into my dissertation project, which then became the flags
 ```bash
 pip install modular
 ```
+
 ## Features
 
 ### Tables Module
 
-The `tables` module provides functions to convert data into various table formats.
+The `tables` module provides a flexible system for normalizing and formatting tabular data. It consists of three main components:
+
+1. **Data Normalization** (`normalize_table`): Converts various input formats into a standardized table structure
+2. **Format Converters**: Built-in formatters for common output formats
+3. **High-level Table Function**: Combines normalization and formatting in one step
 
 #### Supported Formats:
 - Delimited (CSV, TSV, etc.)
 - Markdown
 - reStructuredText
+- Custom formats through formatter functions
 
 ## Usage
 
-### Converting Data to Different Formats
+### Basic Usage
+
+The simplest way to create formatted tables is using the `table` function:
 
 ```python
-from modular.tables import to_delimited, to_markdown, to_rst
+from modular.tables import table, markdown, delimited, rst
 
-# Example data as a list of dictionaries
-data_dict = [
+data = [
     {"name": "Alice", "age": 30, "city": "New York"},
-    {"name": "Bob", "age": 25, "city": "Los Angeles"},
-    {"name": "Charlie", "age": 35, "city": "Chicago"}
+    {"name": "Bob", "age": 25, "city": "Los Angeles"}
 ]
-
-# Convert to CSV
-csv_output = to_delimited(data_dict)
-print(csv_output)
-
-# Convert to TSV
-tsv_output = to_delimited(data_dict, delimiter='\t')
-print(tsv_output)
 
 # Convert to Markdown
-md_output = to_markdown(data_dict)
-print(md_output)
+md_table = table(data, formatter=markdown)
+
+# Convert to CSV
+csv_table = table(data, formatter=delimited)
+
+# Convert to TSV
+tsv_table = table(data, formatter=lambda t: delimited(t, delimiter='\t'))
 
 # Convert to reStructuredText
-rst_output = to_rst(data_dict)
-print(rst_output)
+rst_table = table(data, formatter=rst)
 ```
 
-You can also use lists of lists:
+### Advanced Features
+
+#### Column Ordering
+
+Control the order of columns in the output:
 
 ```python
-data_list = [
-    ["Alice", 30, "New York"],
-    ["Bob", 25, "Los Angeles"],
-    ["Charlie", 35, "Chicago"]
+md_table = table(
+    data,
+    formatter=markdown,
+    order=['name', 'city', 'age']
+)
+```
+
+#### Value Formatting
+
+Apply format strings to columns:
+
+```python
+data = [
+    {"name": "Alice", "age": 30, "salary": 50000.123},
+    {"name": "Bob", "age": 25, "salary": 60000.456}
 ]
 
-# Convert to any format as shown above
+md_table = table(
+    data,
+    formatter=markdown,
+    cell_formats=['{:s}', '{:d}', '${:.2f}']
+)
+```
+
+#### Custom Headers
+
+Specify custom column headers:
+
+```python
+data = [
+    ['Alice', 30, 'New York'],
+    ['Bob', 25, 'Los Angeles']
+]
+
+md_table = table(
+    data,
+    formatter=markdown,
+    header=['Name', 'Age', 'City']
+)
+```
+
+#### Custom Formatters
+
+Create your own formatters for custom output formats:
+
+```python
+def html_formatter(table):
+    if not table['data']:
+        return ""
+    
+    html = "<table>\n"
+    # Header row
+    html += "  <tr>\n"
+    for header in table['header']:
+        html += f"    <th>{header}</th>\n"
+    html += "  </tr>\n"
+    # Data rows
+    for row in table['data']:
+        html += "  <tr>\n"
+        for cell in row:
+            html += f"    <td>{cell}</td>\n"
+        html += "  </tr>\n"
+    html += "</table>"
+    return html
+
+html_table = table(data, formatter=html_formatter)
+```
+
+### Low-level API
+
+If you need more control, you can use the lower-level functions directly:
+
+```python
+from modular.tables import normalize_table, markdown
+
+# First normalize the data
+normalized = normalize_table(
+    data,
+    header=['Name', 'Age', 'City'],
+    order=['Name', 'City', 'Age'],
+    cell_formats=['{:s}', '{:d}', '{:s}']
+)
+
+# Then convert to desired format
+md_table = markdown(normalized)
 ```
 
 ## Development
@@ -81,6 +167,19 @@ To install the package in development mode:
 git clone https://github.com/yourusername/modular.git
 cd modular
 pip install -e .
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest tests/tables/
+
+# Run specific test file
+pytest tests/tables/test_table.py
+
+# Run specific test class
+pytest tests/tables/test_table.py::TestBuiltinFormatters
 ```
 
 ## License

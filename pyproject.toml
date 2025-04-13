@@ -18,5 +18,5 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/yourusername/modular"
-"Bug Tracker" = "https://github.com/yourusername/modular/issues" 
+"Homepage" = "https://github.com/221b-io/modular"
+"Bug Tracker" = "https://github.com/221b-io/modular/issues" 

@@ -2,6 +2,8 @@
 Table conversion utilities for various formats.
 """
 
-from .converters import to_delimited, to_markdown, to_rst
+from .normalize import normalize_table
+from .converters import delimited, markdown, rst
+from .table import table
 
-__all__ = ['to_delimited', 'to_markdown', 'to_rst'] 
+__all__ = ['table', 'normalize_table', 'delimited', 'markdown', 'rst']  
