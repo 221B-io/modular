@@ -19,7 +19,7 @@ I brought two of these into my dissertation project, which then became the flags
 ## Installation
 
 ```bash
-pip install modular
+TBA
 ```
 
 ## Features
